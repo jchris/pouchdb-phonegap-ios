@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+    <head>
+        <title>A self contained example for the PouchDB using Phonegap</title>
+        <script src="cordova-2.1.0.js" type="text/javascript">
+        </script>
+        <script type = "text/javascript" src="IndexedDBShim.min.js">
+        </script>
+        <script type = "text/javascript" src="pouch.alpha.js">
+        </script>
+        <link href="style.css" rel="stylesheet"/>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <ul>
+            <li>
+                <a href = "javascript:createDB()">Init Database</a>
+            </li>
+            <li>
+                <a href = "javascript:deleteDB()">Delete Database</a>
+            </li>
+            <li>
+                <a href = "javascript:createDoc()">Create Document</a>
+            </li>
+            <li>
+                <a href = "javascript:updateDoc()">Update Document</a>
+            </li>
+            <li>
+                <a href = "javascript:fetchDoc()">Get Document</a>
+            </li>
+            <li>
+                <a href = "javascript:fetchAllDoc()">Get All Documents</a>
+            </li>
+            <li>
+                <a href = "javascript:createBatch()">Batch of Docs</a>
+            </li>
+            <li>
+                <a href = "javascript:deleteDoc()">Delete Document</a>
+            </li>
+            <li>
+                <a href = "javascript:dbinfo()">DB Info</a>
+            </li>
+            <li>
+                <a href = "javascript:repl()">Replicate</a>
+            </li>
+        </ul>
+        <div id = "console">
+        </div>
+        <script type = "text/javascript">
+            var pouchdb, id, rev;
+            window.setTimeout(createDB, 1000);
+            function createDB(){
+            	Pouch('idb://test', function(err, db){
+            		if (err) {
+            			log("An error occured when opening the database");
+            		}
+            		else {
+            			pouchdb = db;
+            			log("Database successfully created");
+            		}
+            	});
+            }
+            
+            function deleteDB(){
+            	Pouch.destroy("idb://test", function(err, info){
+            		db = null;
+            		console.log(arguments);
+            		log(err ? "Could not delete database " : "Database deleted");
+            	});
+            }
+            
+            function createDoc(){
+            	if (!pouchdb) {
+            		alert("Click on CreateDB first");
+            		return;
+            	}
+            	pouchdb.post({
+            		title: 'Title - ' + new Date(),
+            		num: Math.random()
+            	}, function(err, response){
+            		if (err) {
+            			log("Could not save data")
+            		}
+            		else {
+            			log("Document created with " + response.id + " and rev " + response.rev);
+            			id = response.id;
+            			rev = response.rev;
+            		}
+            	});
+            }
+            
+            function updateDoc(){
+            	if (!pouchdb) {
+            		alert("Click on CreateDB first");
+            		return;
+            	}
+            	pouchdb.put({
+            		_id: id,
+            		_rev: rev,
+            		title: "Changed at " + new Date(),
+            		data: "Modified at" + new Date()
+            	
+            	}, function(err, response){
+            		if (err) {
+            			log("Could not save data")
+            		}
+            		else {
+            			log("Document created with " + response.id + " and rev " + response.rev);
+            			id = response.id;
+            			rev = response.rev;
+            		}
+            	});
+            }
+            
+            function fetchDoc(){
+            	if (!id) {
+            		alert("Create a document, so that it can be fetched using its ID");
+            		return;
+            	}
+            	pouchdb.get(id, function(err, doc){
+            		if (err) {
+            			log("Could not fetch document with id " + id);
+            		}
+            		else {
+            			log("Fetched document with id " + id + " and " + doc.title);
+            		}
+            	})
+            }
+            
+            
+            function fetchAllDoc(){
+            	pouchdb.allDocs(function(err, response){
+            		if (err) {
+            			log("Could not fetch all documents");
+            		}
+            		else {
+            			log("Fetched " + response.total_rows + " documents from database");
+            		}
+            	})
+            }
+            
+            function createBatch(){
+            	var data = {
+            		docs: []
+            	};
+            	for (var i = 0; i < 10; i++) {
+            		data.docs.push({
+            			title: "Title - batch" + new Date()
+            		});
+            	}
+            	pouchdb.bulkDocs(data, function(err, response){
+            		if (err) {
+            			log("Could not bulk insert data.", err);
+            		}
+            		else {
+            			log("Inserted " + response.length + " records");
+            		}
+            	});
+            }
+            
+            function deleteDoc(){
+            	if (!id) {
+            		log("Need an ID to remove a document");
+            		return;
+            	}
+            	pouchdb.get(id, function(err, doc){
+            		pouchdb.remove(doc, function(err, response){
+            			if (err) {
+            				log("Could not remove document " + id, err);
+            			}
+            			else {
+            				log("Removed " + response.id);
+            				delete id;
+            			}
+            		})
+            	})
+            }
+            
+            function deleteAllDoc(){
+            
+            }
+            
+            function dbinfo(){
+            	pouchdb.info(function(err, response){
+            		if (err) {
+            			log("Could not get Database info");
+            		}
+            		else {
+            			log(JSON.stringify(response));
+            		}
+            	})
+            }
+            
+            function repl(){
+            	Pouch.replicate('idb://test', 'http://axemclion.iriscouch.com:5984/phonegap_test', function(err, changes){
+            		if (err) {
+            			log("Could not replicate");
+            		}
+            		else {
+            			log("Replication complete", changes);
+            		}
+            	});
+            }
+        </script>
+        <script type = "text/javascript">
+            function log(msg){
+            	var x = document.createElement("p");
+            	x.innerHTML = msg;
+            	document.getElementById("console").appendChild(x);
+            	console.log.apply(console, arguments);
+            }
+        </script>
+    </body>
+</html>

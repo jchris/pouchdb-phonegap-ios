@@ -725,6 +725,10 @@ if (typeof module !== 'undefined' && module.exports) {
         repOpts.filter = opts.filter;
       }
 
+      if (opts.query_params) {
+        repOpts.query_params = opts.query_params;
+      }
+
       var changes = src.changes(repOpts);
       if (opts.continuous) {
         replicateRet.cancel = changes.cancel;
@@ -1797,6 +1801,16 @@ var HttpPouch = function(opts, callback) {
     // be returned.
     if (opts.filter && typeof opts.filter === 'string') {
       params += '&filter=' + opts.filter;
+    }
+
+	// If opts.query_params exists, pass it through to the changes request.
+	// These parameters may be used by the filter on the source database.
+    if (opts.query_params && typeof opts.query_params === 'object') {
+    	for (var param_name in opts.query_params) {
+    		if (opts.query_params.hasOwnProperty(param_name)) {
+    			params += '&'+param_name+'='+opts.query_params[param_name];
+    		}
+    	}
     }
 
     var xhr;

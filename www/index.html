@@ -41,7 +41,10 @@
                 <a href = "javascript:dbinfo()">DB Info</a>
             </li>
             <li>
-                <a href = "javascript:repl()">Replicate</a>
+                <a href = "javascript:pullRepl()">Pull Replicate</a>
+            </li>
+            <li>
+                <a href = "javascript:pushRepl()">Push Replicate</a>
             </li>
         </ul>
         <div id = "console">
@@ -191,8 +194,24 @@
             	})
             }
             
-            function repl(){
-            	Pouch.replicate('idb://test', 'http://axemclion.iriscouch.com:5984/phonegap_test', function(err, changes){
+            function pullRepl(){
+            	Pouch.replicate('http://localhost:4984/channelsync', 'idb://test',
+                    {
+                    	filter : "channelsync/bychannel",
+                    	query_params : {
+                    		channels : "chat"
+                    	}
+                    }, function(err, changes){
+                    if (err) {
+                        log("Could not replicate");
+                    } else {
+                        log("Replication complete", changes);
+                    }
+                });
+            }
+            
+            function pushRepl(){
+            	Pouch.replicate('idb://test', 'http://localhost:4984/channelsync', function(err, changes){
             		if (err) {
             			log("Could not replicate");
             		}

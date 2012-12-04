@@ -2,9 +2,6 @@ window.app = {
 	article : {}, user : {}
 };
 
-
-console.log("js.js")
-
 $(function() {
 	$('body').html(ddoc["index"]);
 

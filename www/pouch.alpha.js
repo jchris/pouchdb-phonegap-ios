@@ -694,6 +694,10 @@ if (typeof module !== 'undefined' && module.exports) {
           var diff = {};
           diff[change.id] = change.changes.map(function(x) { return x.rev; });
           target.revsDiff(diff, function(err, diffs) {
+            if (err) {
+              console.log('revsDiff error', err, diffs)
+              return;
+            }
             if (Object.keys(diffs).length === 0) {
               pending--;
               isCompleted();
@@ -2319,6 +2323,9 @@ var IdbPouch = function(opts, callback) {
 
       index.get(key).onsuccess = function(e) {
         var doc = e.target.result;
+        if (!doc) {
+        	callback(Pouch.Errors.MISSING_DOC, e);
+        }
         if (opts.revs) {
           var path = arrayFirst(rootToLeaf(metadata.rev_tree), function(arr) {
             return arr.ids.indexOf(doc._rev.split('-')[1]) !== -1;
@@ -2355,7 +2362,7 @@ var IdbPouch = function(opts, callback) {
             });
           });
         } else {
-          if (doc._attachments){
+          if (doc && doc._attachments){
             for (var key in doc._attachments) {
               doc._attachments[key].stub = true;
             }
@@ -2552,9 +2559,12 @@ var IdbPouch = function(opts, callback) {
     var missing = {};
 
     function readDoc(err, doc, id) {
+      // if (err) {
+      //   return call(callback, null, req);
+      // }
       req[id].map(function(revId) {
         var matches = function(x) { return x.rev !== revId; };
-        if (!doc || doc._revs_info.every(matches)) {
+        if (!(doc && doc._revs_info) || doc._revs_info.every(matches)) {
           if (!missing[id]) {
             missing[id] = {missing: []};
           }

@@ -1,0 +1,18 @@
+body {
+	font-family: sans-serif;
+	font-size: 200%
+}
+
+input {
+	font-size: 100%
+}
+
+header {
+	padding:8px;
+	margin:-6px;
+	background:#dbddbd;
+}
+
+#pagenav {
+	float:right;
+}

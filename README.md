@@ -14,7 +14,7 @@ You bring:
 
 ## Deploy Your App
 
-* There is a shell of an app in the `myapp/myapp` directory, you can replace it with your code, just remember to keep the files `js.js` and `css.css` around.
+* There is a shell of an app in the `myapp/myapp` directory, you can replace it with your code, just remember to keep the files `myapp/myapp/js.js` and `myapp/myapp/css.css` around.
 * To add new dependencies or inspect the bootloader, check out `www/index.html`. If you edit this file you need to rebuild your Xcode.
 
 To deploy your app, edit the file at `myapp/myapp.js` to point to your sync server, then push your app code by running `node myapp/push.js` -- this puts the app code on the sync server where it can be picked up by running versions of the app on launch.
@@ -36,6 +36,8 @@ The code living in `myapp/myapp` can be hot loaded onto devices by running `node
 This is really handy in a development context, especially for rapid prototyping.
 
 ## TODOs
+
+This whole thing is really experimental and should perhaps be redone from scratch, but so far it works.
 
 * Make the sample app less lame
 * App runtime includes require.js style loader

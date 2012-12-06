@@ -8,11 +8,6 @@ function wikiToHtml(string) {
     return showdownConverter.makeHtml(string.replace(/\[\[(.*)\]\]/g,"[$1]("+wikiLinkPrefix+"$1)"))
 };
 
-content.bindPath("/config", function() {
-    console.log("get config")
-    $('#content').html(ddoc.settings);
-})
-
 
 content.bindPath("/wiki/:name", function(e, params) {
     var id = 'wiki:' + params.name;

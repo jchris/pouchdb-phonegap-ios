@@ -7,6 +7,12 @@ input {
 	font-size: 100%
 }
 
+textarea {
+   font-family: inherit;
+   font-size: inherit;
+   width:100%;
+}
+
 header {
 	padding:8px;
 	margin:-6px;
@@ -15,4 +21,14 @@ header {
 
 #pagenav {
 	float:right;
+}
+
+form {
+	background:#EEE;
+	padding:8px 22px;
+	margin-top: -4px
+}
+label {
+	font-weight: bold;
+	color:#333;
 }

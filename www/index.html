@@ -48,7 +48,8 @@
             $(function() {
             	Pouch('idb://myapp', function(err, db){
             		if (err) {
-            			console.error(err);
+            			$("body").append("<h2>IDB error</h2><pre id=\"error\"></pre>")
+            			$("#error").text(JSON.stringify(err));
             		}
             		else {
             			window.pouchdb = db;

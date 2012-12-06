@@ -1,8 +1,9 @@
-<h1>Edit Page Title</h1>
+<h1>Edit: {{title}}</h1>
 <form>
-	<label>Title <input type="text"></label>
+	<label>Title <input name="title" type="text" value="{{title}}"></label>
 	<br/>
 	<label>Body </label>
 	<br/>
-	<textarea rows=35 cols=60></textarea>
+	<textarea rows=20 cols=60>{{body}}</textarea>
+	<input type="submit">
 </form>

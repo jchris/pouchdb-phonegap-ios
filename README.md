@@ -31,7 +31,7 @@ As far as I can tell, PouchDB sync works in any of these contexts.
 
 ## Hot Code Loading
 
-The code living in `myapp/myapp` can be hot loaded onto devices by running `node myapp/push.js` which sends it to the sync server. Then on the next refresh of the PouchDB `www/index.html` web runtime it will sync the new app code and run it.
+The code living in `myapp/myapp` can be hot loaded onto devices by running `node myapp/push.js` which sends it to the sync server. Then on the next refresh of the PouchDB `www/index.html` web runtime it will sync the new app code and run it. You can refresh the iPad simulator through the Safari Developer menu's Web Inspector.
 
 This is really handy in a development context, especially for rapid prototyping.
 
@@ -42,4 +42,4 @@ This whole thing is really experimental and should perhaps be redone from scratc
 * Make the sample app less lame
 * App runtime includes require.js style loader
 * Better launch performance (idb ready event?)
-
+* Ability to ship app with default myapp.json for better first run experience

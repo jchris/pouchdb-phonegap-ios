@@ -8,24 +8,39 @@
         </script>
         <script type = "text/javascript" src="pouch.alpha.js">
         </script>
+        <!-- app stuff -->
+        <script type = "text/javascript" src="jquery.mustache.js"></script>
+        <script type = "text/javascript" src="pathbinder.js"></script>
+        <script type = "text/javascript" src="showdown.min.js"></script>
         <meta charset="UTF-8">
     </head>
     <body>
     	<h1>Preparing Quantum Phasers...</h1>
         <script type = "text/javascript">
-            var pouchdb, running = false;
+            var running = false;
             var syncUrl = 'http://ether.local:5984/myapp';
+
+            function getDoc(id, callback) {
+				pouchdb.allDocs({include_docs : true}, function(err, docs) {
+					console.log("all", docs);
+					for (var i = 0; i < docs.rows.length; i++) {
+						var row = docs.rows[i];
+						if (row.id === id) {
+							callback(row.doc);
+						}
+					 };
+				})
+            }
 
 			function kickOff(doc) {
 				if (running) {
-					console.log("running", running)
-					console.log("latest", doc._rev)
 					if (running != doc._rev) {location && location.reload()}
 					return;
 				}
 				window.ddoc = doc;
-				$('head').append("<style>"+doc["css"]+"</style>");
-				eval(doc["js"])
+				console.log("running", doc._rev);
+				$('head').append("<style>"+doc.css+"</style>");
+				eval(doc.start);
 				running = doc._rev || true;
 			};
 
@@ -35,31 +50,17 @@
             			console.error(err);
             		}
             		else {
-            			pouchdb = db;
+            			window.pouchdb = db;
             			console.log("Pouch ready");
             			$("body").append("<h2>Pouch ready</h2>")
-        				pouchdb.allDocs({include_docs : true}, function(err, docs) {
-        					console.log("all", docs);
-        					docs.rows.forEach(function(row) {
-        						if (row.id == "myapp") {
-	 								kickOff(row.doc);
-        						}
-        					})
-        				})
+            			getDoc("myapp",kickOff);
             			Pouch.replicate(syncUrl, 'idb://myapp',
             			function(err) {
-            				pouchdb.allDocs({include_docs : true}, function(err, docs) {
-            					console.log("all", docs);
-            					docs.rows.forEach(function(row) {
-            						if (row.id == "myapp") {
-		 								kickOff(row.doc);
-            						}
-            					})
-            				})
+      						getDoc("myapp",kickOff);
             			})
             		}
             	});
-            }, 1000); // wait for idb to open
+            }, 500); // wait for idb to open
         </script>
     </body>
 </html>

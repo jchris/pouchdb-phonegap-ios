@@ -54,8 +54,3 @@ content.bindPath("/edit/:name", function(e, params) {
 
 $.pathbinder.begin("/wiki/Home");
 
-pouchdb.changes({continuous:true, onChange: function(change) {
-    console.log("change", change)
-}}, function(change) {
-    console.log("xchange", change)
-})

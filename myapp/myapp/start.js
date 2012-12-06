@@ -13,16 +13,17 @@ content.bindPath("/config", function() {
     $('#content').html(ddoc.settings);
 })
 
+
 content.bindPath("/wiki/:name", function(e, params) {
     var id = 'wiki:' + params.name;
-    pouchdb.get(id, function(err, doc) {
+    getDoc(id, function(err, doc) {
         console.log("get", err, doc)
         if (err) {
             doc = {title : 'Want to create page "'+params.name+'"?', 
-                body : "Article content goes here. Click [edit](#/edit/"+params.name+") to create a page called \""+params.name+"\"."};
+                markdown : "Article content goes here. Click [edit](#/edit/"+params.name+") to create a page called \""+params.name+"\"."};
         }
         console.log("get page", doc)
-        doc.body = wikiToHtml(doc.body);
+        doc.body = wikiToHtml(doc.markdown);
         $('#content').html($.mustache(ddoc.read, doc));
     });
     $("#breadcrumbs").text("> "+params.name)
@@ -31,20 +32,20 @@ content.bindPath("/wiki/:name", function(e, params) {
 
 content.bindPath("/edit/:name", function(e, params) {
     var id = 'wiki:' + params.name;
-    pouchdb.get(id, function(err, doc) {
+    getDoc(id, function(err, doc) {
         if (err) {
             doc = {_id : id, title : params.name, 
-                body : "Article content goes here."};
+                markdown : "Article content goes here. Link to articles like this: [[Home]]"};
         }
         $('#content').html($.mustache(ddoc.edit, doc));
         $("#content form").submit(function() {
             doc.title = $('input[name="title"]', this).val();
-            doc.body = $('textarea', this).val();
+            doc.markdown = $('textarea', this).val();
             console.log(doc);
             pouchdb.put(doc, function(err, ok) {
                 console.log("put",err,ok)
                 $.pathbinder.go("#/wiki/"+params.name);
-            })
+            });
             return false;
         });
     });
@@ -53,3 +54,8 @@ content.bindPath("/edit/:name", function(e, params) {
 
 $.pathbinder.begin("/wiki/Home");
 
+pouchdb.changes({continuous:true, onChange: function(change) {
+    console.log("change", change)
+}}, function(change) {
+    console.log("xchange", change)
+})

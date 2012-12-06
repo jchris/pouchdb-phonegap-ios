@@ -26,13 +26,14 @@
 					for (var i = 0; i < docs.rows.length; i++) {
 						var row = docs.rows[i];
 						if (row.id === id) {
-							callback(row.doc);
+							return callback(false, row.doc);
 						}
 					 };
+					 callback({error:"not_found"})
 				})
             }
 
-			function kickOff(doc) {
+			function kickOff(err, doc) {
 				if (running) {
 					if (running != doc._rev) {location && location.reload()}
 					return;
@@ -44,7 +45,7 @@
 				running = doc._rev || true;
 			};
 
-            setTimeout(function() {
+            $(function() {
             	Pouch('idb://myapp', function(err, db){
             		if (err) {
             			console.error(err);
@@ -55,12 +56,21 @@
             			$("body").append("<h2>Pouch ready</h2>")
             			getDoc("myapp",kickOff);
             			Pouch.replicate(syncUrl, 'idb://myapp',
-            			function(err) {
-      						getDoc("myapp",kickOff);
+            				{continuous: true}, function(err) {
+            					if (err) {console.log("sync err", err);}
+            					else {
+            						console.log("syncing from", syncUrl)
+            						getDoc("myapp",kickOff);
+	            				}
             			})
+		      			Pouch.replicate('idb://myapp', syncUrl,
+		      				{continuous: true}, function(err) {
+		      					if (err) {console.log("sync err", err);}
+		      					else {console.log("syncing to", syncUrl)}
+		      			})
             		}
             	});
-            }, 500); // wait for idb to open
+            }); // wait for idb to open
         </script>
     </body>
 </html>

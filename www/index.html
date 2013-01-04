@@ -19,7 +19,7 @@
     	<a href="#" onclick="location.reload();">Reload</a>
         <script type = "text/javascript">
             var running = false;
-            var syncUrl = 'http://ether.local:5984/myapp';
+            var syncUrl = 'http://localhost:5984/myapp';
 
             function getDoc(id, callback) {
 				pouchdb.allDocs({include_docs : true}, function(err, docs) {
